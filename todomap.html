@@ -210,7 +210,14 @@ path.link {
                 // toggle(root.children[1].children[2]);
                 // toggle(root.children[9]);
                 // toggle(root.children[9].children[0]);
-
+                root.children.forEach(function (d) {
+                    if (d.children && d.children.length === 2 && d.children[1].name === 'Done') {
+                        toggle(d.children[1]); // Collapse "Done"
+                    } else {
+                        toggleAll(d); // Expand other nodes
+                    }
+                });
+                // Initialize the display to show a few nodes and collapse "Done" by default.
                 // update(root);
 
 
@@ -326,7 +333,6 @@ path.link {
                         d._children = null;
                     }
                 }
-
                 // console.log(JSON.stringify(mindmapData));
                 update(root);
             }
