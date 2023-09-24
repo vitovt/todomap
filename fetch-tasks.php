@@ -14,7 +14,7 @@ if (!empty($accessToken)) {
     try {
         // Fetch task lists from Microsoft To Do API
         $response = fetchTasks($accessToken, $todoListsUrl);
-        
+
         // Return the JSON response
         header('Content-Type: application/json');
         echo json_encode($response);
@@ -29,7 +29,8 @@ if (!empty($accessToken)) {
     echo json_encode(['error' => 'Unauthorized']);
 }
 
-function fetchTasks($accessToken, $todoListsUrl) {
+function fetchTasks($accessToken, $todoListsUrl)
+{
     global $tasksUrl;
     try {
         // Perform the actual API request to fetch task lists from Microsoft To Do API
@@ -46,7 +47,7 @@ function fetchTasks($accessToken, $todoListsUrl) {
         // Initialize the mindmapData array
         $mindmapData = [
             'name' => 'ToDoTasks',
-            'children' => []
+            'children' => [],
         ];
 
         // Fetch tasks for each task list
@@ -75,7 +76,7 @@ function fetchTasks($accessToken, $todoListsUrl) {
                     'name' => $task['title'],
                     'description' => 'Description',
                     'url' => '',
-                    'free' => true
+                    'free' => true,
                     // Add other task properties as needed
                 ];
 
@@ -94,14 +95,14 @@ function fetchTasks($accessToken, $todoListsUrl) {
                     [
                         'name' => 'ToDo',
                         'description' => 'Tasks to be done',
-                        'children' => $toDoTasks
+                        'children' => $toDoTasks,
                     ],
                     [
                         'name' => 'Done',
                         'description' => 'Completed tasks',
-                        'children' => $doneTasks
-                    ]
-                ]
+                        'children' => $doneTasks,
+                    ],
+                ],
             ];
 
             // Add the list node to the mindmapData
@@ -115,7 +116,8 @@ function fetchTasks($accessToken, $todoListsUrl) {
     }
 }
 
-function performApiRequest($url, $accessToken) {
+function performApiRequest($url, $accessToken)
+{
     // Initialize cURL session
     $ch = curl_init($url);
 
@@ -123,7 +125,7 @@ function performApiRequest($url, $accessToken) {
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
     curl_setopt($ch, CURLOPT_HTTPHEADER, [
         'Authorization: Bearer ' . $accessToken,
-        'Content-Type: application/json'
+        'Content-Type: application/json',
     ]);
 
     // Execute the cURL request and get the response
@@ -137,9 +139,6 @@ function performApiRequest($url, $accessToken) {
 
     return [
         'status' => $httpStatus,
-        'body' => $response
+        'body' => $response,
     ];
 }
-
-?>
-
