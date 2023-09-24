@@ -1,6 +1,7 @@
 <?php
 
         $accessToken = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
+$tags_view = 1;
 
 // Define the Microsoft To Do API endpoint URLs
 $todoListsUrl = 'https://graph.microsoft.com/v1.0/me/todo/lists';
@@ -32,6 +33,8 @@ if (!empty($accessToken)) {
 function fetchTasks($accessToken, $todoListsUrl)
 {
     global $tasksUrl;
+    global $tags_view;
+
     try {
         // Perform the actual API request to fetch task lists from Microsoft To Do API
         $listsResponse = performApiRequest($todoListsUrl, $accessToken);
@@ -69,22 +72,74 @@ function fetchTasks($accessToken, $todoListsUrl)
             // Initialize arrays to separate tasks into 'ToDo' and 'Done' categories
             $toDoTasks = [];
             $doneTasks = [];
+            $allTags = [];
+            $tagNodes = [];
 
             foreach ($tasksData['value'] as $task) {
+
+                $status = $task['status'] == 'completed' ? 'done' : 'todo';
+
                 // Create a task node
                 $taskNode = [
                     'name' => $task['title'],
                     'description' => 'Description',
                     'url' => '',
                     'free' => true,
+                    'status' => $status,
                     // Add other task properties as needed
                 ];
 
-                if ($task['status'] === 'completed') {
-                    $doneTasks[] = $taskNode;
-                } else {
-                    $toDoTasks[] = $taskNode;
+                $tagName = 'Untagged';
+                preg_match('/#([^\s]+)/', $task['title'], $matches);
+
+                if (!empty($matches)) {
+                    $tagName = $matches[1];
                 }
+                if (!in_array($tagName, $allTags)) {
+                    $allTags[] = $tagName;
+                }
+                $tagNodes[$tagName][] = $taskNode;
+            }
+            foreach ($allTags as $tagName) {
+                // echo $tagName;
+                $tagNode_done = [
+                    'name' => '#' . $tagName,
+                    'description' => '',
+                    'url' => '',
+                    'free' => true,
+                    // Add other task properties as needed
+                ];
+                $tagNode_todo = [
+                    'name' => '#' . $tagName,
+                    'description' => '',
+                    'url' => '',
+                    'free' => true,
+                    // Add other task properties as needed
+                ];
+
+                foreach ($tagNodes[$tagName] as $taskNode) {
+                    $status = $taskNode['status'];
+                    if ($status == 'done') {
+                        if ($tags_view) {
+                            $tagNode_done['children'][] = $taskNode;
+                        } else {
+                            $doneTasks[] = $taskNode;
+                        }
+                    } else {
+                        if ($tags_view) {
+                            $tagNode_todo['children'][] = $taskNode;
+                        } else {
+                            $toDoTasks[] = $taskNode;
+                        }
+                    }
+                }
+                if (!empty($tagNode_done['children'])) {
+                    $doneTasks[] = $tagNode_done;
+                }
+                if (!empty($tagNode_todo['children'])) {
+                    $toDoTasks[] = $tagNode_todo;
+                }
+
             }
 
             // Create 'ToDo' and 'Done' nodes under the task list
