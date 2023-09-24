@@ -193,7 +193,24 @@ path.link {
         async function createMindMap() {
             // const accessToken = await fetchAccessToken();
             // console.log(accessToken);
-            const mindmapData = await fetchTasks(accessToken);
+
+            //get tasks via JS
+            //const mindmapData = await fetchTasks(accessToken);
+
+            //get tasks via PHP backend
+            // Make a GET request to fetch_tasks.php with the access token
+            const response = await fetch('fetch-tasks.php', {
+                method: 'GET',
+                headers: {
+                    Authorization: `Bearer ${accessToken}`,
+                },
+            });
+
+            if (!response.ok) {
+                throw new Error(`Error fetching tasks: ${response.status}`);
+            }
+
+            const mindmapData = await response.json();
 
             if (mindmapData) {
                 var m = [20, 120, 20, 20],
