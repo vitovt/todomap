@@ -79,8 +79,27 @@ path.link {
     <div id="mindmap-container"></div>
 
     <script>
+
         // Your Microsoft To Do API access token
-        const accessToken = "EwBwA8l6BAAUAOyDv0l6PcCVu89kmzvqZmkWABkAAezxWdq4NWAw9s35sGdZbGxVu43FFyoXjvAKpP4ZgwlG2OM8aNeIYPME8Umu90hDqT/cKaxOvWZs97srMxc7nlwIziYeUjLrmlEYkSKxftbl1nbYjme586g351Svt8vnnPbWdnna0ydm7LaRfwMVlKQcnndg2Z8j6rOYD+gJztJlTEIYT55nEvHXuyMtWINOCK2wiA/VpJQN0CNZ/c0xPqzkgJTzEnPP/Zg/lttLMk7giQe31OGW6zB0d6ALvOlu4I1xwwBYNsGrJwCoRV02i94ToHjKiKPlhi6U1FHu7QWfM9SlI76ZGmIeq7gGffezY0NXsfToKCxttv4MWiEbaRkDZgAACMEUMHQV+SX9QAL7cNX3Um5975ef5fLGwOC84POhqn+zK4XTjGlnSGoL8xeX1ltLNBQxR493qvBmQdckx5Lb9nj8iSFlHprARpXWpZkvzlCB/fKV7JhbJMtyFUzVbeRj512cup0sWUE84C7b522BZa31IK93gCAFotSfAkNlYQZadVx+pU1hbfE+eBg9Sr0GjziKR1b4kdtSlMGQNC4pgV0b8A+91rioBL3o8Nns2TyGvC1mr9kZ0IFgWDXH/7DjVlbSktLJu2Oo8rNENF8x7CjM+ouv7QKUUqFfPmZj87JfXGSWQ1QwwYGReG49/A9L6P5RaefzDgKz8M3Bhyf3/1/duvxuWZZCZHZ+kMKEmRIqD0EKTyAng3Dtvv7jfq83zylw8WbuxrWBfr8QGKJtjJJR1sJpUMnEnhtA8QWzWT2V7cy7gut3tnfuNjBaMukOFFYS7e/tTaRzyP/Mr6HKbFNnGhMfGV7WxGC+tNqP9Pfq58DskdHz9IfoGjfNwIDzHy7N4zOeYtfnaXvEnR7PQd1XeZc9n7PJ3M9yeXelA77wxZAMx3Zctga98PR4hUqaS6lsztXwsIZ91Kx/FiGHBAy6PF3cfsDOfvvPMDJo3Bf9YG2AhxQnzzw2xodnSRT2CxpRaa0+Km47+TK7VoVZpkzd/aGz/h/LtiEFvKM8ht84stPIUz5ViuTh40fOoRJUxWLPjIeZFNjIVmNJpc91deGZ8qdfVqPOOYiICTttcPie6IHpeQQu69pBKCrvyq9RseN+/KF4RLNbeRx5Ag==";
+        const accessToken = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==";
+
+        // Function to fetch the access token from your PHP script
+        async function fetchAccessToken() {
+            try {
+                const response = await fetch('auth.php');
+
+                if (!response.ok) {
+                    throw new Error(`Error fetching access token: ${response.status}`);
+                }
+
+                const data = await response.json();
+                return data.access_token;
+            } catch (error) {
+                console.error('Error fetching access token:', error);
+                return null;
+            }
+        }
+
         const baseGraphUrl = "https://graph.microsoft.com/v1.0";
 
         // Microsoft To Do API endpoints
@@ -88,7 +107,7 @@ path.link {
         const tasksUrl = baseGraphUrl + "/me/todo/lists/{listId}/tasks";
 
         // Function to fetch tasks from Microsoft To Do API
-        async function fetchTasks() {
+        async function fetchTasks(accessToken) {
             try {
                 const response = await fetch(todoListsUrl, {
                     headers: {
@@ -172,7 +191,9 @@ path.link {
         }
         // Function to create and display the mind map
         async function createMindMap() {
-            const mindmapData = await fetchTasks();
+            // const accessToken = await fetchAccessToken();
+            // console.log(accessToken);
+            const mindmapData = await fetchTasks(accessToken);
 
             if (mindmapData) {
                 var m = [20, 120, 20, 20],
