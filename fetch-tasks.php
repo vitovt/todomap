@@ -1,7 +1,7 @@
 <?php
 
-        $accessToken = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX";
 $tags_view = 1;
+$accessToken = trim(file_get_contents('token.cfg'));
 
 // Define the Microsoft To Do API endpoint URLs
 $todoListsUrl = 'https://graph.microsoft.com/v1.0/me/todo/lists';
