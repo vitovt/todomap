@@ -80,129 +80,15 @@ path.link {
 
     <script>
 
-        // Your Microsoft To Do API access token
-        const accessToken = "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX==";
-
-        // Function to fetch the access token from your PHP script
-        async function fetchAccessToken() {
-            try {
-                const response = await fetch('auth.php');
-
-                if (!response.ok) {
-                    throw new Error(`Error fetching access token: ${response.status}`);
-                }
-
-                const data = await response.json();
-                return data.access_token;
-            } catch (error) {
-                console.error('Error fetching access token:', error);
-                return null;
-            }
-        }
-
-        const baseGraphUrl = "https://graph.microsoft.com/v1.0";
-
-        // Microsoft To Do API endpoints
-        const todoListsUrl = baseGraphUrl + "/me/todo/lists";
-        const tasksUrl = baseGraphUrl + "/me/todo/lists/{listId}/tasks";
-
-        // Function to fetch tasks from Microsoft To Do API
-        async function fetchTasks(accessToken) {
-            try {
-                const response = await fetch(todoListsUrl, {
-                    headers: {
-                        Authorization: `Bearer ${accessToken}`,
-                        'Content-Type': 'application/json',
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error(`Error fetching task lists: ${response.status}`);
-                }
-
-                const todoListsData = await response.json();
-                const mindmapData = {
-                    name: "ToDoTasks",
-                    children: [],
-                };
-
-                // Fetch tasks for each task list
-                for (const list of todoListsData.value) {
-                    const listResponse = await fetch(tasksUrl.replace("{listId}", list.id), {
-                        headers: {
-                            Authorization: `Bearer ${accessToken}`,
-                            'Content-Type': 'application/json',
-                        },
-                    });
-
-                    if (!listResponse.ok) {
-                        throw new Error(`Error fetching tasks for list ${list.displayName}: ${listResponse.status}`);
-                    }
-
-                    const tasksData = await listResponse.json();
-                    // console.log(tasksData);
-
-                    // Separate tasks into 'ToDo' and 'Done' categories
-                    const toDoTasks = [];
-                    const doneTasks = [];
-
-                    for (const task of tasksData.value) {
-                        const taskNode = {
-                            name: task.title,
-                            description: 'Description',
-                            url: '',
-                            free: true,
-                            // Add other task properties as needed
-                        };
-
-                        if (task.status === 'completed') {
-                            doneTasks.push(taskNode);
-                        } else {
-                            toDoTasks.push(taskNode);
-                        }
-                    }
-
-                    // Create 'ToDo' and 'Done' nodes under the task list
-                    const listNode = {
-                        name: list.displayName,
-                        description: list.wellknownListName,
-                        children: [
-                            {
-                                name: 'ToDo',
-                                description: 'Tasks to be done',
-                                children: toDoTasks,
-                            },
-                            {
-                                name: 'Done',
-                                description: 'Completed tasks',
-                                children: doneTasks,
-                            },
-                        ],
-                    };
-
-                    mindmapData.children.push(listNode);
-                }
-
-                return mindmapData;
-            } catch (error) {
-                console.error("Error fetching tasks:", error);
-                return null;
-            }
-        }
         // Function to create and display the mind map
         async function createMindMap() {
-            // const accessToken = await fetchAccessToken();
-            // console.log(accessToken);
-
-            //get tasks via JS
-            //const mindmapData = await fetchTasks(accessToken);
 
             //get tasks via PHP backend
             // Make a GET request to fetch_tasks.php with the access token
             const response = await fetch('fetch-tasks.php', {
                 method: 'GET',
                 headers: {
-                    Authorization: `Bearer ${accessToken}`,
+                    Authorization: `Bearer seCrEtToken`,
                 },
             });
 
