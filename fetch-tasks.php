@@ -40,9 +40,18 @@ function fetchTasks($accessToken, $todoListsUrl)
         // Perform the actual API request to fetch task lists from Microsoft To Do API
         $listsResponse = performApiRequest($todoListsUrl, $accessToken);
 
+	$status = $listsResponse['status'];
+	$errorResponse = json_decode($listsResponse['body']);
         // Check if the request was successful
-        if ($listsResponse['status'] !== 200) {
-            throw new Exception("Error fetching task lists: " . $listsResponse['status']);
+        if ($status !== 200) {
+            http_response_code($status);
+            $responseData = [
+               'status' => $status,
+               'responseText' => $errorResponse->error->code,
+               'responseMessage' => $errorResponse->error->message,
+            ];
+            echo json_encode($responseData);
+            exit;
         }
 
         // Parse the JSON response

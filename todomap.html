@@ -97,7 +97,10 @@ path.link {
             });
 
             if (!response.ok) {
-                throw new Error(`Error fetching tasks: ${response.status}`);
+		const responseData = await response.json();
+		const mindmapContainer = document.getElementById('mindmap-container');
+                mindmapContainer.innerHTML = `<h1>Error ${response.status} - ${responseData.responseText}</h1><p>${responseData.responseMessage}</p>`;
+		throw new Error(`Error fetching tasks: ${response.status} - ${responseData.responseText}`);
             }
 
             const mindmapData = await response.json();
