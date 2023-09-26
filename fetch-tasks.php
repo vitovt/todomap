@@ -1,7 +1,8 @@
 <?php
 
-$tags_view = 1;
 $accessToken = trim(file_get_contents('token.cfg'));
+
+$tagsView = isset($_GET['tags_view']) ? ($_GET['tags_view'] === '1' ? true : false) : false;
 
 // Define the Microsoft To Do API endpoint URLs
 $todoListsUrl = 'https://graph.microsoft.com/v1.0/me/todo/lists';
@@ -33,7 +34,7 @@ if (!empty($accessToken)) {
 function fetchTasks($accessToken, $todoListsUrl)
 {
     global $tasksUrl;
-    global $tags_view;
+    global $tagsView;
 
     try {
         // Perform the actual API request to fetch task lists from Microsoft To Do API
@@ -120,13 +121,13 @@ function fetchTasks($accessToken, $todoListsUrl)
                 foreach ($tagNodes[$tagName] as $taskNode) {
                     $status = $taskNode['status'];
                     if ($status == 'done') {
-                        if ($tags_view) {
+                        if ($tagsView) {
                             $tagNode_done['children'][] = $taskNode;
                         } else {
                             $doneTasks[] = $taskNode;
                         }
                     } else {
-                        if ($tags_view) {
+                        if ($tagsView) {
                             $tagNode_todo['children'][] = $taskNode;
                         } else {
                             $toDoTasks[] = $taskNode;

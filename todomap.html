@@ -76,16 +76,20 @@ path.link {
 </head>
 <body>
     <!-- Create a container for the mind map -->
+    <p><button id="toggle-tag-view">Toggle Tag View</button></p>
     <div id="mindmap-container"></div>
+    <p>Get token <a href="https://beast.aprt.info/todomap/todo-authorize.php">here</a></p>
 
     <script>
 
         // Function to create and display the mind map
-        async function createMindMap() {
-
+        async function createMindMap(tagsView) {
+            // Clear the existing content in the mindmap container
+            const mindmapContainer = document.getElementById('mindmap-container');
+            mindmapContainer.innerHTML = '';
             //get tasks via PHP backend
             // Make a GET request to fetch_tasks.php with the access token
-            const response = await fetch('fetch-tasks.php', {
+            const response = await fetch(`fetch-tasks.php?tags_view=${tagsView ? '1' : '0'}`, {
                 method: 'GET',
                 headers: {
                     Authorization: `Bearer seCrEtToken`,
@@ -262,8 +266,24 @@ path.link {
             }
         }
 
+        // Function to toggle the tags_view parameter and refresh the mind map
+        async function toggleTagView() {
+            const tagsViewButton = document.getElementById('toggle-tag-view');
+            const currentTagsView = tagsViewButton.getAttribute('data-tags-view') === '1';
+
+            // Toggle the tags_view parameter and update the button data attribute
+            const newTagsView = !currentTagsView;
+            tagsViewButton.setAttribute('data-tags-view', newTagsView ? '1' : '0');
+
+            // Refresh the mind map with the new tags_view parameter
+            await createMindMap(newTagsView);
+        }
+
+        // Add a click event listener to the "Toggle Tag View" button
+        document.getElementById('toggle-tag-view').addEventListener('click', toggleTagView);
+
         // Call the createMindMap function to display the mind map
-        createMindMap();
+        createMindMap(false);
     </script>
     <script>
     // var json_data = {};
